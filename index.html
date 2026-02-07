@@ -31,9 +31,11 @@
       background: var(--bg);
       color: var(--ink);
       font-family: 'Montserrat', sans-serif;
-      overflow: hidden; /* no scroll */
+      overflow-x: hidden;
+      overflow-y: auto;
       -webkit-font-smoothing: antialiased;
       position: relative;
+      min-height: 100vh;
     }
 
     /* ===== Fullscreen background slideshow ===== */
@@ -78,10 +80,11 @@
     .wrap{
       position:relative;
       z-index:1;
-      height:100vh;
+      min-height:100vh;
+      height:auto;
       display:grid;
       place-items:center;
-      padding: clamp(14px, 2.5vw, 34px);
+      padding: clamp(16px, 2.5vw, 34px);
       text-align:center;
     }
 
@@ -199,6 +202,8 @@
       max-width: 460px;
       width: 92%;
       margin: 0 auto;
+      padding-left: 4px;
+      padding-right: 4px;
     }
 
     .form-instruction{
@@ -293,10 +298,87 @@
       to{opacity:1; transform: translateY(0);}
     }
 
+    @media (max-width: 900px){
+      .card{
+        width: min(760px, 94vw);
+        padding: clamp(22px, 5vw, 38px);
+      }
+      .divider{
+        margin: 16px auto 72px;
+      }
+    }
+
+    @media (max-width: 700px){
+      .wrap{
+        padding: 18px 12px 24px;
+        place-items: start center;
+      }
+      .card{
+        width: 100%;
+        border-radius: 20px;
+        padding: 22px 18px 24px;
+      }
+      .status-badge{
+        letter-spacing: 0.34em;
+        margin-bottom: 1.25rem;
+      }
+      .logo{
+        letter-spacing: 0.2em;
+      }
+      .tagline{
+        letter-spacing: 0.1em;
+      }
+      .divider{
+        width: 110px;
+        margin: 14px auto 72px;
+      }
+      .form-section{
+        width: 100%;
+      }
+      .input-group{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+      input[type="email"]{
+        border-bottom: 1px solid rgba(26,26,26,.22);
+        padding: 0 0 10px;
+      }
+      .input-group:focus-within input[type="email"]{
+        border-bottom: 1px solid rgba(26,26,26,.75);
+      }
+      button{
+        width: 100%;
+        border: 1px solid rgba(26,26,26,.2);
+        padding: 11px 10px;
+        letter-spacing: 0.18em;
+      }
+      .social{
+        margin-top: 24px;
+      }
+      footer{
+        margin-top: 12px;
+        letter-spacing: 0.2em;
+      }
+    }
+
     @media (max-width: 480px){
-      .logo{letter-spacing:0.18em;}
-      .social{gap: 12px; margin-top: 26px;}
-      .card{border-radius:22px;}
+      .logo{
+        font-size: clamp(2rem, 12vw, 2.45rem);
+        letter-spacing: 0.14em;
+      }
+      .tagline{
+        font-size: 0.95rem;
+      }
+      .social{
+        gap: 10px;
+      }
+      .social a{
+        width: 36px;
+        height: 36px;
+      }
     }
   </style>
 </head>
