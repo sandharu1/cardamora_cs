@@ -18,6 +18,7 @@
       --gold:#B79C6B;
       --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
       --ease-soft: cubic-bezier(0.34, 0.95, 0.64, 1);
+      --ease-quick: cubic-bezier(0.4, 0, 0.2, 1);
 
       --card1: rgba(249,247,242,.82);
       --card2: rgba(249,247,242,.64);
@@ -232,11 +233,12 @@
       display:flex;
       border-bottom: 1px solid rgba(26,26,26,.22);
       padding-bottom: 10px;
-      transition: var(--transition);
+      transition: border-color .35s var(--ease-quick), transform .35s var(--ease-soft);
       gap: 10px;
     }
     .input-group:focus-within{
       border-bottom: 1px solid rgba(26,26,26,.75);
+      transform: translateY(-1px);
     }
 
     input[type="email"]{
@@ -248,6 +250,7 @@
       letter-spacing: 0.05em;
       color: var(--ink);
       flex:1;
+      transition: color .25s var(--ease-quick);
     }
 
     button{
@@ -260,10 +263,13 @@
       letter-spacing: 0.22em;
       color: var(--ink);
       padding: 0 8px;
-      transition: .3s;
+      transition: color .25s var(--ease-quick), transform .25s var(--ease-soft), border-color .25s var(--ease-quick), background-color .25s var(--ease-quick);
       white-space: nowrap;
     }
-    button:hover{ color: var(--accent); }
+    button:hover{
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
 
     .social{
       margin-top: 34px;
@@ -317,11 +323,20 @@
       place-items: center;
       padding: 16px;
       z-index: 20;
-      opacity: 1;
-      transition: opacity .3s var(--ease-soft);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+      transition: opacity .32s var(--ease-soft), visibility 0s linear .32s, backdrop-filter .32s var(--ease-soft), -webkit-backdrop-filter .32s var(--ease-soft);
     }
-    .note-dialog[hidden]{
-      display: none;
+    .note-dialog.is-open{
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      transition: opacity .32s var(--ease-soft), visibility 0s, backdrop-filter .32s var(--ease-soft), -webkit-backdrop-filter .32s var(--ease-soft);
     }
     .note-dialog__panel{
       width: min(520px, 94vw);
@@ -331,8 +346,14 @@
       padding: 18px;
       text-align: left;
       box-shadow: 0 20px 48px rgba(0,0,0,.18);
+      transform: translateY(10px) scale(.985);
+      opacity: 0;
+      transition: transform .34s var(--ease-soft), opacity .34s var(--ease-soft);
+      will-change: transform, opacity;
+    }
+    .note-dialog.is-open .note-dialog__panel{
       transform: translateY(0) scale(1);
-      animation: noteEnter .28s var(--ease-soft);
+      opacity: 1;
     }
     .note-dialog__title{
       font-family: 'Cormorant Garamond', serif;
@@ -340,12 +361,6 @@
       font-weight: 400;
       margin-bottom: 8px;
       letter-spacing: 0.06em;
-    }
-    .note-dialog__hint{
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      color: rgba(26,26,26,.72);
-      margin-bottom: 10px;
     }
     #note-popup{
       width: 100%;
@@ -359,9 +374,11 @@
       letter-spacing: 0.02em;
       color: var(--ink);
       outline: none;
+      transition: border-color .22s var(--ease-quick), box-shadow .22s var(--ease-quick);
     }
     #note-popup:focus{
       border-color: rgba(26,26,26,.72);
+      box-shadow: 0 0 0 3px rgba(183,156,107,.15);
     }
     .note-dialog__actions{
       margin-top: 12px;
@@ -376,22 +393,27 @@
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
+      transition: transform .2s var(--ease-soft), border-color .2s var(--ease-quick), background-color .2s var(--ease-quick), color .2s var(--ease-quick);
+    }
+    .note-btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(26,26,26,.42);
     }
     .note-btn.primary{
       background: var(--ink);
       color: #fff;
       border-color: var(--ink);
     }
+    .note-btn.primary:hover{
+      background: #2a2a2a;
+      border-color: #2a2a2a;
+      color: #fff;
+    }
 
     @keyframes fadeIn{
       from{opacity:0; transform: translateY(16px); filter: blur(3px);}
       to{opacity:1; transform: translateY(0); filter: blur(0);}
     }
-    @keyframes noteEnter{
-      from{opacity:0; transform: translateY(12px) scale(.98);}
-      to{opacity:1; transform: translateY(0) scale(1);}
-    }
-
     @media (max-width: 900px){
       .card{
         width: min(760px, 94vw);
@@ -507,7 +529,7 @@
         <form action="https://formspree.io/f/xdalklql" method="POST" id="waitlist-form" accept-charset="UTF-8">
           <div class="input-group">
             <input id="email" name="email" type="email" placeholder="E-mail Address" required aria-label="Email for waitlist">
-            <input id="note-hidden" name="note" type="hidden">
+            <input id="note-hidden" name="message" type="hidden">
             <input type="hidden" name="_subject" value="New CARDAMORA waitlist signup">
             <button type="submit" id="btn">Invite Me</button>
           </div>
@@ -517,9 +539,8 @@
       </div>
       <div id="note-dialog" class="note-dialog" role="dialog" aria-modal="true" aria-labelledby="note-title" hidden>
         <div class="note-dialog__panel">
-          <h2 id="note-title" class="note-dialog__title">Add a note?</h2>
-          <p class="note-dialog__hint">Optional: share your expectations or special wishes.</p>
-          <textarea id="note-popup" rows="4" placeholder="Share your expectations or any special wishes (optional)"></textarea>
+          <h2 id="note-title" class="note-dialog__title">Add note?</h2>
+          <textarea id="note-popup" rows="4" placeholder="Any expectations or special wishes?"></textarea>
           <div class="note-dialog__actions">
             <button type="button" id="skip-note" class="note-btn">Skip</button>
             <button type="button" id="send-note" class="note-btn primary">Send Invite</button>
@@ -563,16 +584,29 @@
     const sendNoteBtn = document.getElementById('send-note');
     const status = document.getElementById('form-status');
     let submitConfirmed = false;
+    let closeDialogTimer = null;
+    let statusTimer = null;
 
     function openNoteDialog() {
+      if (closeDialogTimer) {
+        clearTimeout(closeDialogTimer);
+        closeDialogTimer = null;
+      }
       noteDialog.hidden = false;
       document.body.classList.add('dialog-open');
-      notePopup.focus();
+      requestAnimationFrame(function() {
+        noteDialog.classList.add('is-open');
+        notePopup.focus();
+      });
     }
 
     function closeNoteDialog() {
-      noteDialog.hidden = true;
+      noteDialog.classList.remove('is-open');
       document.body.classList.remove('dialog-open');
+      closeDialogTimer = setTimeout(function() {
+        noteDialog.hidden = true;
+        closeDialogTimer = null;
+      }, 320);
     }
 
     function continueSubmit(withNote) {
@@ -603,6 +637,10 @@
     });
 
     emailInput.addEventListener('focus', function() {
+      if (statusTimer) {
+        clearTimeout(statusTimer);
+        statusTimer = null;
+      }
       if (status.textContent) {
         status.textContent = '';
         status.classList.remove('error');
@@ -646,7 +684,18 @@
         notePopup.value = '';
         emailInput.placeholder = 'E-mail Address';
         status.textContent = 'Thank you. You are on the waitlist.';
+        if (statusTimer) {
+          clearTimeout(statusTimer);
+        }
+        statusTimer = setTimeout(function() {
+          status.textContent = '';
+          statusTimer = null;
+        }, 3500);
       } catch (err) {
+        if (statusTimer) {
+          clearTimeout(statusTimer);
+          statusTimer = null;
+        }
         status.textContent = 'Could not submit. Please try again.';
         status.classList.add('error');
       } finally {
