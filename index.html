@@ -214,6 +214,16 @@
       text-transform: uppercase;
       color: rgba(26,26,26,.70);
     }
+    .form-status{
+      margin-top: 12px;
+      min-height: 1.1em;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: rgba(26,26,26,.72);
+    }
+    .form-status.error{
+      color: #7f2a2a;
+    }
 
     .input-group{
       display:flex;
@@ -404,12 +414,14 @@
       <div class="divider"></div>
 
       <div class="form-section">
-        <form action="#" id="waitlist-form">
+        <form action="https://formspree.io/f/YOUR_FORMSPREE_FORM_ID" method="POST" id="waitlist-form" accept-charset="UTF-8">
           <div class="input-group">
-            <input id="email" type="email" placeholder="E-mail Address" required aria-label="Email for waitlist">
+            <input id="email" name="email" type="email" placeholder="E-mail Address" required aria-label="Email for waitlist">
+            <input type="hidden" name="_subject" value="New CARDAMORA waitlist signup">
             <button type="submit" id="btn">Invite Me</button>
           </div>
         </form>
+        <p id="form-status" class="form-status" aria-live="polite"></p>
         <p class="form-instruction">Join the waitlist for our inaugural collection</p>
       </div>
 
@@ -440,15 +452,48 @@
   </main>
 
   <script>
-    document.getElementById('waitlist-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btn');
-      const input = document.getElementById('email');
+    const form = document.getElementById('waitlist-form');
+    const btn = document.getElementById('btn');
+    const input = document.getElementById('email');
+    const status = document.getElementById('form-status');
 
-      btn.textContent = "Thank You";
-      input.value = "";
-      input.placeholder = "We will reach out soon";
-      input.disabled = true;
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const endpoint = form.getAttribute('action');
+      const isConfigured = endpoint && !endpoint.includes('YOUR_FORMSPREE_FORM_ID');
+      if (!isConfigured) {
+        status.textContent = 'Set your Formspree form ID before publishing.';
+        status.classList.add('error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      status.textContent = '';
+      status.classList.remove('error');
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        });
+
+        if (!response.ok) {
+          throw new Error('Form submit failed');
+        }
+
+        form.reset();
+        input.placeholder = 'E-mail Address';
+        status.textContent = 'Thank you. You are on the waitlist.';
+      } catch (err) {
+        status.textContent = 'Could not submit. Please try again.';
+        status.classList.add('error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Invite Me';
+      }
     });
   </script>
 </body>
