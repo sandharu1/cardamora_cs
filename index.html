@@ -340,11 +340,13 @@
     }
     .note-dialog__panel{
       width: min(520px, 94vw);
+      max-height: calc(100dvh - 32px);
       background: rgba(249,247,242,.98);
       border: 1px solid rgba(26,26,26,.18);
       border-radius: 16px;
       padding: 18px;
       text-align: left;
+      overflow: auto;
       box-shadow: 0 20px 48px rgba(0,0,0,.18);
       transform: translateY(10px) scale(.985);
       opacity: 0;
@@ -477,6 +479,25 @@
       .note-btn{
         width: 100%;
       }
+      .note-dialog{
+        align-items: end;
+        padding: 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+      }
+      .note-dialog__panel{
+        width: 100%;
+        max-height: calc(100dvh - 24px);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .note-dialog__title{
+        font-size: 1.25rem;
+        margin-bottom: 7px;
+      }
+      #note-popup{
+        min-height: 96px;
+        max-height: 36dvh;
+      }
       .social{
         margin-top: 24px;
       }
@@ -500,6 +521,19 @@
       .social a{
         width: 36px;
         height: 36px;
+      }
+      .note-dialog{
+        padding: 10px;
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+      }
+      .note-dialog__panel{
+        max-height: calc(100dvh - 20px);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .note-btn{
+        padding: 10px 12px;
+        letter-spacing: 0.12em;
       }
     }
   </style>
